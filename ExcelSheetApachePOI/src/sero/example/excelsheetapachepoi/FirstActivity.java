@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.Cell;
@@ -75,69 +76,95 @@ public class FirstActivity extends Activity {
 		}
 		
 		writeToXlFile(workbook);
-		/*try {
-		    FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_WORLD_READABLE);
-		    workbook.write(fos);
-		    fos.close();
-		    System.out.println("onClickCreateButton(): Excel written successfully..");
-		} catch (FileNotFoundException e) {
-			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickCreateButton()-> create-write-save");
-		    e.printStackTrace();
-		} catch (IOException e) {
-			Log.e("SEROTONIN", "EXCEPTION:IOException: onClickCreateButton()-> create-write-save");
-		    e.printStackTrace();
-		}*/
 		
 	} //e.o.onClickCreateButton
 	
 	
-	
-	
-	
-	
-	public void onClickSetRowHeightButton(View V) {
+	private Workbook getWorkbook(){
 		InputStream in_stream = null;
-		Row row = null;
-		Cell cell = null;
-		Sheet sheet = null;
+		Workbook workbook = null;
 		
 		try {
 			in_stream = new FileInputStream("/data/data/sero.example.excelsheetapachepoi/files/newxl.xls");
 		} catch (FileNotFoundException e) {
-			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> in_stream");
+			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: getWorkbook()-> in_stream");
 			e.printStackTrace();
 		}
 		
-		Workbook workbook = null;
 		if (in_stream != null) {
 			try {
 				workbook = new HSSFWorkbook(in_stream);
 			} catch (FileNotFoundException e) {
-				Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> HSSFWorkbook");
+				Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: getWorkbook()-> HSSFWorkbook");
 				e.printStackTrace();
 			} catch (IOException e) {
-				Log.e("SEROTONIN", "EXCEPTION:IOException: onClickUpdateButton()-> HSSFWorkbook");
+				Log.e("SEROTONIN", "EXCEPTION:IOException: getWorkbook()-> HSSFWorkbook");
 				e.printStackTrace();
 			}
 		} else {
-			Log.e("SEROTONIN", "EXCEPTION: onClickUpdateButton()-> in_stream==null");
+			Log.e("SEROTONIN", "EXCEPTION: getWorkbook()-> in_stream==null");
 		}
 		
-		if (workbook != null) {
+		return workbook;
+	}
+	
+	
+	public void onClickSetRowHeightButton(View V) {
+		Workbook workbook = getWorkbook();
+		Sheet sheet = null;
+		
+		if (workbook == null) {
+			Log.e("SEROTONIN", "onClickSetRowHeightButton(): workbook == null");
+			return;
+		} else {
+			sheet = workbook.getSheetAt(0);
+			if (sheet == null) {
+				Log.e("SEROTONIN", "onClickSetRowHeightButton()-> sheet==null RETURNING HOMe");
+				return;
+			} else {
+				int row_count = sheet.getPhysicalNumberOfRows();
+				Row row_to_adjust_height = sheet.getRow(row_count-1);
+				row_to_adjust_height.setHeightInPoints(sheet.getDefaultRowHeightInPoints() * (float)10);
+				writeToXlFile(workbook);
+			}
+		}
+	}//e.o.onClickSetRowHeightButton
+	
+
+	
+	
+	public void onClickSetColumnWidthButton(View V) {
+		Workbook workbook = getWorkbook();
+		Sheet sheet = null;
+		
+		if (workbook == null) {
+			Log.e("SEROTONIN", "workbook == null");
+			return;
+		} else {
 			sheet = workbook.getSheetAt(0);
 			if (sheet == null) {
 				Log.e("SEROTONIN", "onClickUpdateButton()-> sheet==null RETURNING HOMe");
 				return;
+			} else {
+				Row row = sheet.getRow(0);
+				int column_count = row.getPhysicalNumberOfCells();
+				Toast.makeText(getApplicationContext(), "column_count=" + column_count, Toast.LENGTH_SHORT).show();
+				int width = 0;
+				for (int c=0; c<column_count; c++) {
+					switch (c){
+					case 0: 	width = 1000;
+									break;	
+					case 1: 	width = 10000;
+									break;
+					case 2: 	width = 10000;
+									break;
+					}
+					sheet.setColumnWidth(c, width);
+				}
+			
+				writeToXlFile(workbook);
 			}
-			
-			int row_count = sheet.getPhysicalNumberOfRows();
-			Row row_to_adjust_height = sheet.getRow(row_count-1);
-			row_to_adjust_height.setHeightInPoints(sheet.getDefaultRowHeightInPoints() * (float)10);
-			
-			writeToXlFile(workbook);
-			
 		}
-		
 		
 	}//e.o.onClickSetRowHeightButton
 	

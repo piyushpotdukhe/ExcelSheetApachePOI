@@ -74,9 +74,8 @@ public class FirstActivity extends Activity {
 		    }
 		}
 		
-		try {
-			//File file_new = new File("/data/data/sero.example.excelsheetapachepoi/files/new.xls");
-		    //FileOutputStream fos = new FileOutputStream(file_new);
+		writeToXlFile(workbook);
+		/*try {
 		    FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_WORLD_READABLE);
 		    workbook.write(fos);
 		    fos.close();
@@ -87,7 +86,7 @@ public class FirstActivity extends Activity {
 		} catch (IOException e) {
 			Log.e("SEROTONIN", "EXCEPTION:IOException: onClickCreateButton()-> create-write-save");
 		    e.printStackTrace();
-		}
+		}*/
 		
 	} //e.o.onClickCreateButton
 	
@@ -96,6 +95,128 @@ public class FirstActivity extends Activity {
 	
 	
 	
+	public void onClickSetRowHeightButton(View V) {
+		InputStream in_stream = null;
+		Row row = null;
+		Cell cell = null;
+		Sheet sheet = null;
+		
+		try {
+			in_stream = new FileInputStream("/data/data/sero.example.excelsheetapachepoi/files/newxl.xls");
+		} catch (FileNotFoundException e) {
+			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> in_stream");
+			e.printStackTrace();
+		}
+		
+		Workbook workbook = null;
+		if (in_stream != null) {
+			try {
+				workbook = new HSSFWorkbook(in_stream);
+			} catch (FileNotFoundException e) {
+				Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> HSSFWorkbook");
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.e("SEROTONIN", "EXCEPTION:IOException: onClickUpdateButton()-> HSSFWorkbook");
+				e.printStackTrace();
+			}
+		} else {
+			Log.e("SEROTONIN", "EXCEPTION: onClickUpdateButton()-> in_stream==null");
+		}
+		
+		if (workbook != null) {
+			sheet = workbook.getSheetAt(0);
+			if (sheet == null) {
+				Log.e("SEROTONIN", "onClickUpdateButton()-> sheet==null RETURNING HOMe");
+				return;
+			}
+			
+			int row_count = sheet.getPhysicalNumberOfRows();
+			Row row_to_adjust_height = sheet.getRow(row_count-1);
+			row_to_adjust_height.setHeightInPoints(sheet.getDefaultRowHeightInPoints() * (float)10);
+			
+			writeToXlFile(workbook);
+			
+		}
+		
+		
+	}//e.o.onClickSetRowHeightButton
+	
+	
+	
+	
+	public void onClickInsertLastRowButton(View V) {
+		InputStream in_stream = null;
+		Row row = null;
+		Cell cell = null;
+		Sheet sheet = null;
+		
+		try {
+			in_stream = new FileInputStream("/data/data/sero.example.excelsheetapachepoi/files/newxl.xls");
+		} catch (FileNotFoundException e) {
+			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> in_stream");
+			e.printStackTrace();
+		}
+		
+		Workbook workbook = null;
+		if (in_stream != null) {
+			try {
+				workbook = new HSSFWorkbook(in_stream);
+			} catch (FileNotFoundException e) {
+				Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> HSSFWorkbook");
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.e("SEROTONIN", "EXCEPTION:IOException: onClickUpdateButton()-> HSSFWorkbook");
+				e.printStackTrace();
+			}
+		} else {
+			Log.e("SEROTONIN", "EXCEPTION: onClickUpdateButton()-> in_stream==null");
+		}
+		
+		if (workbook != null) {
+			sheet = workbook.getSheetAt(0);
+			if (sheet == null) {
+				Log.e("SEROTONIN", "onClickUpdateButton()-> sheet==null RETURNING HOMe");
+				return;
+			}
+			
+			int row_count = sheet.getPhysicalNumberOfRows();
+			Toast.makeText(getApplicationContext(), "rows=" + row_count, Toast.LENGTH_SHORT).show();
+			row = sheet.createRow(row_count); //value starts with 0
+			row_count = sheet.getPhysicalNumberOfRows();
+			if (row != null) {
+				for (int cellnum=0; cellnum<6; cellnum++) {
+					cell = row.createCell(cellnum);
+					cell.setCellValue("TEST_UPDATE");
+				}
+			} else {
+				Log.e("SEROTONIN", "onClickInsertLastRowButton()-> 1.row==null");
+			}
+			
+			if (row != null) {
+				writeToXlFile(workbook);
+			} else {
+				Log.e("SEROTONIN", "onClickInsertLastRowButton()-> 2.row==null");
+			}	
+			
+			
+		}
+		
+	}//e.o.onClickInsertLastRowButton
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
 	//SEROTONIN: UPDATE EXISTING EXCEL FILE (/data/data/sero.example.excelsheetapachepoi/files/newxl.xl)
 	public void onClickUpdateButton(View V) {
 		
@@ -160,18 +281,7 @@ public class FirstActivity extends Activity {
 		}
 		
 		if(cell != null) {
-			try {
-			    FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_WORLD_READABLE);
-			    workbook.write(fos);
-			    fos.close();
-			    System.out.println("onClickUpdateButton(): Excel written successfully..");
-			} catch (FileNotFoundException e) {
-				Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> create-write-save");
-			    e.printStackTrace();
-			} catch (IOException e) {
-				Log.e("SEROTONIN", "EXCEPTION:IOException: onClickUpdateButton()-> create-write-save");
-			    e.printStackTrace();
-			}
+			writeToXlFile(workbook);
 		} else {
 			Log.e("SEROTONIN", "onClickUpdateButton()-> write_to_file: cell==null");
 		}
@@ -248,5 +358,33 @@ public class FirstActivity extends Activity {
 			Log.e("SEROTONIN", "onClickReadFromAssetsButton()-> workbook==null");
 		}
 	}//e.o.onClickReadFromAssetsButton
+	
+	
+	
+	
+	
+	
+	
+	
+	private void writeToXlFile(Workbook workbook) {
+		 try {
+		    FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_WORLD_READABLE);
+		    workbook.write(fos);
+		    fos.close();
+		    System.out.println("onClickCreateButton(): Excel written successfully..");
+		} catch (FileNotFoundException e) {
+			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickCreateButton()-> create-write-save");
+		    e.printStackTrace();
+		} catch (IOException e) {
+			Log.e("SEROTONIN", "EXCEPTION:IOException: onClickCreateButton()-> create-write-save");
+		    e.printStackTrace();
+		}
+	} //e.o.writeToXlFile
+
+
+
+
+	
+	
 
 } //e.o.Activity

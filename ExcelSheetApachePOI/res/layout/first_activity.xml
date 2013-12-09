@@ -33,12 +33,39 @@
        />
 
     <Button
-       android:id="@+id/btn_updatee"
+       android:id="@+id/btn_update"
        android:layout_width="fill_parent"
        android:layout_height="wrap_content"
        android:layout_below="@id/btn_create"
        android:onClick="onClickUpdateButton"
        android:text="Update Existing Excell Sheet"
+       />
+    
+    <Button
+       android:id="@+id/btn_insert_last_row"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_below="@id/btn_update"
+       android:onClick="onClickInsertLastRowButton"
+       android:text="PopulateToLastRow"
+       />
+    
+    <Button
+       android:id="@+id/btn_set_row_height"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_below="@id/btn_insert_last_row"
+       android:onClick="onClickSetRowHeightButton"
+       android:text="Set Row Height"
+       />
+    
+    <Button
+       android:id="@+id/btn_set_column_width"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_below="@id/btn_set_row_height"
+       android:onClick="onClickSetColumnWidthButton"
+       android:text="Set Column Width"
        />
     
 </RelativeLayout>

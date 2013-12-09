@@ -80,7 +80,7 @@ public class FirstActivity extends Activity {
 		    FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_WORLD_READABLE);
 		    workbook.write(fos);
 		    fos.close();
-		    System.out.println("Excel written successfully..");
+		    System.out.println("onClickCreateButton(): Excel written successfully..");
 		} catch (FileNotFoundException e) {
 			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickCreateButton()-> create-write-save");
 		    e.printStackTrace();
@@ -89,11 +89,94 @@ public class FirstActivity extends Activity {
 		    e.printStackTrace();
 		}
 		
-		
-		
 	} //e.o.onClickCreateButton
 	
 	
+	
+	
+	
+	
+	//SEROTONIN: UPDATE EXISTING EXCEL FILE (/data/data/sero.example.excelsheetapachepoi/files/newxl.xl)
+	public void onClickUpdateButton(View V) {
+		
+//		HSSFWorkbook workbook = new HSSFWorkbook();
+		InputStream in_stream = null;
+		try {
+			in_stream = new FileInputStream("/data/data/sero.example.excelsheetapachepoi/files/newxl.xls");
+		} catch (FileNotFoundException e) {
+			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> in_stream");
+			e.printStackTrace();
+		}
+		
+		Workbook workbook = null;
+		if (in_stream != null) {
+			try {
+				workbook = new HSSFWorkbook(in_stream);
+			} catch (FileNotFoundException e) {
+				Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> HSSFWorkbook");
+				e.printStackTrace();
+			} catch (IOException e) {
+				Log.e("SEROTONIN", "EXCEPTION:IOException: onClickUpdateButton()-> HSSFWorkbook");
+				e.printStackTrace();
+			}
+		} else {
+			Log.e("SEROTONIN", "EXCEPTION: onClickUpdateButton()-> in_stream==null");
+		}
+//		HSSFSheet sheet = workbook.createSheet("SHEET_ONE");
+		
+		Row row = null;
+		Cell cell = null;
+		Sheet sheet = null;
+		if (workbook != null) {
+				sheet = workbook.getSheetAt(0);
+				if (sheet == null) {
+					Log.e("SEROTONIN", "onClickUpdateButton()-> sheet==null RETURNING HOMe");
+					return;
+				} 
+				
+				row = sheet.getRow(2);
+				if (row != null) {
+//						for (int cell_index = 1; cell_index<4 ; cell_index++) {
+							try {
+								cell = row.getCell(1/*cell_index*/);
+							} catch (Exception e) {
+								Log.e("SEROTONIN", "EXCEPTION:??: onClickUpdateButton()-> getCell");
+							    e.printStackTrace();
+							}
+							if(cell != null) {
+							    String cellContents = cell.getStringCellValue(); 
+							    //Modify the cellContents here
+							    // Write the output to a file
+							    cell.setCellValue("SEROTONIN"); 
+							} else {
+								Log.e("SEROTONIN", "onClickUpdateButton()-> cell==null");
+							}
+//						} 
+				} else {
+					Log.e("SEROTONIN", "onClickUpdateButton(): row==null");
+				}
+		} else {
+			Log.e("SEROTONIN", "workbook==null");
+		}
+		
+		if(cell != null) {
+			try {
+			    FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_WORLD_READABLE);
+			    workbook.write(fos);
+			    fos.close();
+			    System.out.println("onClickUpdateButton(): Excel written successfully..");
+			} catch (FileNotFoundException e) {
+				Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickUpdateButton()-> create-write-save");
+			    e.printStackTrace();
+			} catch (IOException e) {
+				Log.e("SEROTONIN", "EXCEPTION:IOException: onClickUpdateButton()-> create-write-save");
+			    e.printStackTrace();
+			}
+		} else {
+			Log.e("SEROTONIN", "onClickUpdateButton()-> write_to_file: cell==null");
+		}
+		
+	} //e.o.onClickUpdateButton
 	
 	
 	

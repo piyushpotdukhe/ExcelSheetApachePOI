@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -21,12 +22,15 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 public class FirstActivity extends Activity {
+	
+	public final String FILE_NAME = "newxl.xls";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +47,8 @@ public class FirstActivity extends Activity {
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		HSSFSheet sheet = workbook.createSheet("SHEET_ONE");
 		
-		Map<String, Object[]> data = new HashMap<String, Object[]>();
+		Map<String, Object[]> map = new HashMap<String, Object[]>();
+		Map<String, Object[]> data = new TreeMap<String, Object[]>(map); //sort map alphabetically
 		data.put("1", new Object[] {"Emp No.", "Name", "Salary"});
 		data.put("2", new Object[] {1d, "John", 1500000d});
 		data.put("3", new Object[] {2d, "Sam", 800000d});
@@ -52,6 +57,7 @@ public class FirstActivity extends Activity {
 		Set<String> keyset = data.keySet();
 		int rownum = 0;
 		for (String key : keyset) {
+			Log.v("SEROTONIN", "MAP: key=" + key);
 		    Row row = sheet.createRow(rownum++);
 		    Object [] objArr = data.get(key);
 		    int cellnum = 0;
@@ -69,10 +75,11 @@ public class FirstActivity extends Activity {
 		}
 		
 		try {
-			File file_new = new File("/data/data/sero.example.excelsheetapachepoi/files/new.xls");
-		    FileOutputStream out = new FileOutputStream(file_new);
-		    workbook.write(out);
-		    out.close();
+			//File file_new = new File("/data/data/sero.example.excelsheetapachepoi/files/new.xls");
+		    //FileOutputStream fos = new FileOutputStream(file_new);
+		    FileOutputStream fos = openFileOutput(FILE_NAME, Context.MODE_WORLD_READABLE);
+		    workbook.write(fos);
+		    fos.close();
 		    System.out.println("Excel written successfully..");
 		} catch (FileNotFoundException e) {
 			Log.e("SEROTONIN", "EXCEPTION:FileNotFoundException: onClickCreateButton()-> create-write-save");
